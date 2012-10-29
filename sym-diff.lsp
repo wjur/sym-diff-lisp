@@ -60,6 +60,7 @@
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) (list 'cos x))
         ((eq fun 'cos) (list '- 0 (list 'sin x)))
+        ((eq fun 'tan) (list '+ 1 (list '* (list 'tan x) (list 'tan x))))
         ((eq fun 'log) (list '/ 1  x))
      (T
         (error "Not a function!" fun)))
@@ -69,6 +70,7 @@
 (defun is_fun(fun)
     (cond ((eq fun 'sin) T)
         ((eq fun 'cos) T)
+        ((eq fun 'tan) T)
         ((eq fun 'log) T)
      (T 
         NIL))
