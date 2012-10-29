@@ -47,6 +47,10 @@
                 )
             )
         )
+        ; pierwiatek, z wykorzystaniem expr
+        ((equal (first expr) 'sqrt)
+            (diff (list 'expt (nth 1 expr) (list '/ 1 2)) var)
+        )
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
