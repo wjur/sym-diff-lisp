@@ -8,7 +8,8 @@
         ) ; tutaj sprawdzic czy to ta sama zmienna
         ; suma
         ((equal (first expr) '+)
-            (list '+ (diff (nth 1 expr) var) (diff (nth 2 expr) var))) 
+            (d_sum expr var)
+        )
         ; roznica
         ((equal (first expr) '-)
             (list '- (diff (nth 1 expr) var) (diff (nth 2 expr) var)))
@@ -53,6 +54,25 @@
         )
         (T
          (error "Unknown expression type - DERIV" expr)))
+)
+
+(defun d_sum(expr var)
+    (setq left (diff (nth 1 expr) var))
+    (setq right (diff (nth 2 expr) var))
+    ;(list '+ left right)
+    (if (and (eq left 0) (eq right 0))
+        '0
+        (if (eq left 0)
+            right
+            (if (eq right 0)
+                left
+                (if (and (numberp left) (numberp right))
+                    (list '+ left right) ;(+ left right)
+                    (list '+ left right)
+                )
+            )
+        )
+    )  
 )
          
  ; zamienia f(x) na odpowiednie g(x)
