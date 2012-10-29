@@ -28,14 +28,35 @@
             (list '*  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var) )
         )
         
-
+        ; (f^g)' = f^(g-1)*(gf' + g'f logf) 
+        ((equal (first expr) 'expt)
+            (list '* 
+                (list 'expt (nth 1 expr) (list '- (nth 2 expr) 1))
+                (list '+ 
+                    (list '* 
+                        (nth 2 expr)
+                        (diff (nth 1 expr) var)
+                    )
+                    (list '* 
+                        (list '* 
+                            (diff (nth 2 expr) var)
+                            (nth 1 expr)
+                        )
+                        (list 'log (nth 1 expr))
+                    )
+                )
+            )
+        )
+        (T
+         (error "Unknown expression type - DERIV" expr)))
+)
          
  ; zamienia f(x) na odpowiednie g(x)
  ; np. cos(x) na -sin(x)
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) (list 'cos x))
         ((eq fun 'cos) (list '- 0 (list 'sin x)))
-     (else
+     (T
         (error "Not a function!" fun)))
 )
          
@@ -43,7 +64,7 @@
 (defun is_fun(fun)
     (cond ((eq fun 'sin) T)
         ((eq fun 'cos) T)
-     (else
-        (error "Not a function!" fun)))
+     (T 
+        NIL))
 )
        
