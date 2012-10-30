@@ -23,9 +23,7 @@
         )
         ; iloraz (f/g)' = (f'g - fg') / (g*g)
         ((equal (first expr) '/)
-            (list '/ (list '-  (list '* (nth 2 expr) (diff (nth 1 expr) var))
-                (list '* (nth 1 expr) (diff (nth 2 expr) var)))
-                (list '* (nth 2 expr) (nth 2 expr)))
+            (d_div expr var)
         )
         ; zlozenie funkcji (h(g))' = h'(g) * g'
         ((is_fun (first expr))
@@ -83,7 +81,7 @@
                 '0
             )
             ((and (eq left '0) (not (eq right '0)))
-                right
+                (- right)
             )
             ((and (eq right '0) (not (eq left '0)))
                 left
@@ -113,6 +111,22 @@
              (list '* left right)))
 )
 
+
+(defun make_div(up down)
+    (cond 
+            ((eq up '0) 
+                '0
+            )
+            ((eq down '1)
+                up
+            )
+            ((and (numberp up) (numberp down))
+                (/ up down)
+            )
+            (T
+             (list '/ up down)))
+)
+
 ; pochodna sumy
 ; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
 (defun d_sum(expr var)
@@ -128,6 +142,11 @@
                 (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
 )
 
+(defun d_div (expr var)
+    (make_div (make_sub  (make_mul (nth 2 expr) (diff (nth 1 expr) var))
+                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
+                (make_mul (nth 2 expr) (nth 2 expr)))
+)
             
        
  ; zamienia f(x) na odpowiednie g(x)
