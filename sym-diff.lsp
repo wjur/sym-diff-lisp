@@ -55,6 +55,7 @@
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
+
 (defun make_sum(left right)
     (cond 
             ((and (eq left '0) (eq right '0)) 
@@ -72,12 +73,33 @@
             (T
              (list '+ left right)))
 )
+
+(defun make_sub(left right)
+    (cond 
+            ((and (eq left '0) (eq right '0)) 
+                '0
+            )
+            ((and (eq left '0) (not (eq right '0)))
+                right
+            )
+            ((and (eq right '0) (not (eq left '0)))
+                left
+            )
+            ((and (numberp left) (numberp right))
+                (- left right)
+            )
+            (T
+             (list '- left right)))
+)
 ; pochodna sumy
 ; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
 (defun d_sum(expr var)
     (make_sum (diff (nth 1 expr) var) (diff (nth 2 expr) var))
 )
-         
+
+(defun d_sub(expr var)
+    (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
+)         
  ; zamienia f(x) na odpowiednie g(x)
  ; np. cos(x) na -sin(x)
 (defun change_fun(fun x)
