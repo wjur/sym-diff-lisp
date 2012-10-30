@@ -55,17 +55,8 @@
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
-
-; pochodna sumy
-; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
-(defun d_sum(expr var)
-    (let (
-            (left (diff (nth 1 expr) var))
-            (right (diff (nth 2 expr) var))
-         )
-    
-        ;(list '+ left right)
-        (cond 
+(defun make_sum(left right)
+    (cond 
             ((and (eq left '0) (eq right '0)) 
                 '0
             )
@@ -79,8 +70,12 @@
                 (+ left right)
             )
             (T
-             (list '+ left right))) 
-    )
+             (list '+ left right)))
+)
+; pochodna sumy
+; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
+(defun d_sum(expr var)
+    (make_sum (diff (nth 1 expr) var) (diff (nth 2 expr) var))
 )
          
  ; zamienia f(x) na odpowiednie g(x)
