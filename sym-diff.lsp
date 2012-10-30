@@ -1,43 +1,35 @@
 (defun diff(expr var)
-    (cond ((numberp expr) 0)
+    (cond
+        ; a' = 0
+        ((numberp expr) 0)
+        
+        ; x' = 1, y' = 0
         ((symbolp expr)
-            (if (eq expr var) 
-                1
-                0
-            )
-        ) ; tutaj sprawdzic czy to ta sama zmienna
-        ; suma
-        ((equal (first expr) '+)
-            (d_sum expr var)
-        )
-        ; roznica
-        ((equal (first expr) '-)
-            (d_sub expr var)
-            ;(list '- (diff (nth 1 expr) var) (diff (nth 2 expr) var)))
-        )
-        ; iloczyn (fg)' = f'g + fg'
-        ((equal (first expr) '*)
-            (d_mul expr var)
-            ;(list '+  (list '* (nth 2 expr) (diff (nth 1 expr) var))
-            ;    (list '* (nth 1 expr) (diff (nth 2 expr) var)))
-        )
-        ; iloraz (f/g)' = (f'g - fg') / (g*g)
-        ((equal (first expr) '/)
-            (d_div expr var)
-        )
-        ; zlozenie funkcji (h(g))' = h'(g) * g'
+            (if (eq expr var) 1 0))
+            
+        ; (f + g)' = f' + g'
+        ((equal (first expr) '+) (d_sum expr var))
+        
+        ; (f - g)' = f' - g'
+        ((equal (first expr) '-) (d_sub expr var))
+        
+        ; (fg)' = f'g + fg'
+        ((equal (first expr) '*) (d_mul expr var))
+        
+        ; (f/g)' = (f'g - fg') / (g*g)
+        ((equal (first expr) '/) (d_div expr var))
+        
+        ; (h(g))' = h'(g) * g'
         ((is_fun (first expr))
-            (make_mul  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var) )
-        )
+            (make_mul  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var)))
         
         ; (f^g)' = f^(g-1)*(gf' + g'f logf) 
         ((equal (first expr) 'expt)
-            (make_comp expr var)
-        )
-        ; pierwiatek, z wykorzystaniem expr
+            (make_comp expr var))
+        
+        ; (sqrt f)' = (f^(1/2))'
         ((equal (first expr) 'sqrt)
-            (diff (list 'expt (nth 1 expr) (list '/ 1 2)) var)
-        )
+            (diff (list 'expt (nth 1 expr) (list '/ 1 2)) var))
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
