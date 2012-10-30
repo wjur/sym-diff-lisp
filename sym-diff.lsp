@@ -56,23 +56,31 @@
          (error "Unknown expression type - DERIV" expr)))
 )
 
+; pochodna sumy
+; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
 (defun d_sum(expr var)
-    (setq left (diff (nth 1 expr) var))
-    (setq right (diff (nth 2 expr) var))
-    ;(list '+ left right)
-    (if (and (eq left 0) (eq right 0))
-        '0
-        (if (eq left 0)
-            right
-            (if (eq right 0)
-                left
-                (if (and (numberp left) (numberp right))
-                    (list '+ left right) ;(+ left right)
-                    (list '+ left right)
-                )
+    (let (
+            (left (diff (nth 1 expr) var))
+            (right (diff (nth 2 expr) var))
+         )
+    
+        ;(list '+ left right)
+        (cond 
+            ((and (eq left '0) (eq right '0)) 
+                '0
             )
-        )
-    )  
+            ((and (eq left '0) (not (eq right '0)))
+                right
+            )
+            ((and (eq right '0) (not (eq left '0)))
+                left
+            )
+            ((and (numberp left) (numberp right))
+                (+ left right)
+            )
+            (T
+             (list '+ left right))) 
+    )
 )
          
  ; zamienia f(x) na odpowiednie g(x)
@@ -94,5 +102,4 @@
         ((eq fun 'log) T)
      (T 
         NIL))
-)
-       
+)   
