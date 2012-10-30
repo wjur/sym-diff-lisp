@@ -34,6 +34,7 @@
          (error "Unknown expression type - DERIV" expr)))
 )
 
+; simplifies a sum
 (defun make_sum(left right)
     (cond 
             ((and (eq left '0) (eq right '0)) 
@@ -52,6 +53,7 @@
              (list '+ left right)))
 )
 
+; simplifies a subtraction
 (defun make_sub(left right)
     (cond 
             ((and (eq left '0) (eq right '0)) 
@@ -70,6 +72,7 @@
              (list '- left right)))
 )
 
+; simplifies a multiplication
 (defun make_mul(left right)
     (cond 
             ((or (eq left '0) (eq right '0)) 
@@ -88,7 +91,7 @@
              (list '* left right)))
 )
 
-
+; simplifies a division
 (defun make_div(up down)
     (cond 
             ((eq up '0) 
@@ -104,27 +107,31 @@
              (list '/ up down)))
 )
 
-; pochodna sumy
-; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
+
+; (f + g)' = f' + g'
 (defun d_sum(expr var)
     (make_sum (diff (nth 1 expr) var) (diff (nth 2 expr) var))
 )
 
+; (f - g)' = f' - g'
 (defun d_sub(expr var)
     (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
 )
 
+; (fg)' = f'g + fg'
 (defun d_mul(expr var)
     (make_sum (make_mul (nth 2 expr) (diff (nth 1 expr) var))
                 (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
 )
 
+; (f/g)' = (f'g - fg') / (g*g)
 (defun d_div (expr var)
     (make_div (make_sub  (make_mul (nth 2 expr) (diff (nth 1 expr) var))
                 (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
                 (make_mul (nth 2 expr) (nth 2 expr)))
 )
-  
+
+; (f^g)' = f^(g-1)*(gf' + g'f logf)  
 (defun make_comp (expr var)
             (make_mul 
                 (list 'expt (nth 1 expr) (list '- (nth 2 expr) 1))
@@ -143,8 +150,9 @@
                 )
             )  
   )     
- ; zamienia f(x) na odpowiednie g(x)
- ; np. cos(x) na -sin(x)
+
+; changes a function to its derivative  
+;  cos(x) na -sin(x)
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) (list 'cos x))
         ((eq fun 'cos) (list '- 0 (list 'sin x)))
@@ -154,7 +162,7 @@
         (error "Not a function!" fun)))
 )
          
-         
+; checks if derivative for the function is known         
 (defun is_fun(fun)
     (cond ((eq fun 'sin) T)
         ((eq fun 'cos) T)
