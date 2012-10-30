@@ -12,11 +12,14 @@
         )
         ; roznica
         ((equal (first expr) '-)
-            (list '- (diff (nth 1 expr) var) (diff (nth 2 expr) var)))
+            (d_sub expr var)
+            ;(list '- (diff (nth 1 expr) var) (diff (nth 2 expr) var)))
+        )
         ; iloczyn (fg)' = f'g + fg'
         ((equal (first expr) '*)
-            (list '+  (list '* (nth 2 expr) (diff (nth 1 expr) var))
-                (list '* (nth 1 expr) (diff (nth 2 expr) var)))
+            (d_mul expr var)
+            ;(list '+  (list '* (nth 2 expr) (diff (nth 1 expr) var))
+            ;    (list '* (nth 1 expr) (diff (nth 2 expr) var)))
         )
         ; iloraz (f/g)' = (f'g - fg') / (g*g)
         ((equal (first expr) '/)
@@ -120,6 +123,12 @@
     (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
 )
 
+(defun d_mul(expr var)
+    (make_sum (make_mul (nth 2 expr) (diff (nth 1 expr) var))
+                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
+)
+
+            
        
  ; zamienia f(x) na odpowiednie g(x)
  ; np. cos(x) na -sin(x)
