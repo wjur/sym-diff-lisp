@@ -29,7 +29,7 @@
         
         ; (sqrt f)' = (f^(1/2))'
         ((equal (first expr) 'sqrt)
-            (diff (list 'expt (nth 1 expr) (list '/ 1 2)) var))
+            (diff (list 'expt (nth 1 expr) (make_div 1 2)) var))
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
@@ -97,6 +97,9 @@
             ((eq up '0) 
                 '0
             )
+            ((eq up '1) 
+                (/ up down)
+            )
             ((eq down '1)
                 up
             )
@@ -134,7 +137,7 @@
 ; (f^g)' = f^(g-1)*(gf' + g'f logf)  
 (defun make_comp (expr var)
             (make_mul 
-                (list 'expt (nth 1 expr) (list '- (nth 2 expr) 1))
+                (list 'expt (nth 1 expr) (make_sub (nth 2 expr) 1))
                 (make_sum 
                     (make_mul  
                         (nth 2 expr)
@@ -155,9 +158,9 @@
 ;  cos(x) na -sin(x)
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) (list 'cos x))
-        ((eq fun 'cos) (list '- 0 (list 'sin x)))
-        ((eq fun 'tan) (list '+ 1 (list '* (list 'tan x) (list 'tan x))))
-        ((eq fun 'log) (list '/ 1  x))
+        ((eq fun 'cos) (list '- 0.0 (list 'sin x)))
+        ((eq fun 'tan) (list '+ 1.0 (list '* (list 'tan x) (list 'tan x))))
+        ((eq fun 'log) (list '/ 1.0  x))
      (T
         (error "Not a function!" fun)))
 )
