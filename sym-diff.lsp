@@ -27,27 +27,12 @@
         )
         ; zlozenie funkcji (h(g))' = h'(g) * g'
         ((is_fun (first expr))
-            (list '*  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var) )
+            (make_mul  (change_fun (first expr) (nth 1 expr)) (diff (nth 1 expr) var) )
         )
         
         ; (f^g)' = f^(g-1)*(gf' + g'f logf) 
         ((equal (first expr) 'expt)
-            (list '* 
-                (list 'expt (nth 1 expr) (list '- (nth 2 expr) 1))
-                (list '+ 
-                    (list '* 
-                        (nth 2 expr)
-                        (diff (nth 1 expr) var)
-                    )
-                    (list '* 
-                        (list '* 
-                            (diff (nth 2 expr) var)
-                            (nth 1 expr)
-                        )
-                        (list 'log (nth 1 expr))
-                    )
-                )
-            )
+            (make_comp expr var)
         )
         ; pierwiatek, z wykorzystaniem expr
         ((equal (first expr) 'sqrt)
@@ -147,8 +132,25 @@
                 (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
                 (make_mul (nth 2 expr) (nth 2 expr)))
 )
-            
-       
+  
+(defun make_comp (expr var)
+            (make_mul 
+                (list 'expt (nth 1 expr) (list '- (nth 2 expr) 1))
+                (make_sum 
+                    (make_mul  
+                        (nth 2 expr)
+                        (diff (nth 1 expr) var)
+                    )
+                    (make_mul 
+                        (make_mul 
+                            (diff (nth 2 expr) var)
+                            (nth 1 expr)
+                        )
+                        (list 'log (nth 1 expr))
+                    )
+                )
+            )  
+  )     
  ; zamienia f(x) na odpowiednie g(x)
  ; np. cos(x) na -sin(x)
 (defun change_fun(fun x)
