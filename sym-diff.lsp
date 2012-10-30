@@ -91,6 +91,25 @@
             (T
              (list '- left right)))
 )
+
+(defun make_mul(left right)
+    (cond 
+            ((or (eq left '0) (eq right '0)) 
+                '0
+            )
+            ((eq left '1)
+                right
+            )
+            ((eq right '1)
+                left
+            )
+            ((and (numberp left) (numberp right))
+                (* left right)
+            )
+            (T
+             (list '* left right)))
+)
+
 ; pochodna sumy
 ; upraszcza wyrazenie, pomija zera i sumuje cyfry tam gdzie mozna
 (defun d_sum(expr var)
@@ -99,7 +118,9 @@
 
 (defun d_sub(expr var)
     (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
-)         
+)
+
+       
  ; zamienia f(x) na odpowiednie g(x)
  ; np. cos(x) na -sin(x)
 (defun change_fun(fun x)
