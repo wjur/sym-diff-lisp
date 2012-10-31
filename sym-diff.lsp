@@ -37,13 +37,13 @@
 ; simplifies a sum
 (defun make_sum(left right)
     (cond 
-            ((and (eq left '0) (eq right '0)) 
+            ((and (equalp left '0) (equalp right '0)) 
                 '0
             )
-            ((and (eq left '0) (not (eq right '0)))
+            ((and (equalp left '0) (not (equalp right '0)))
                 right
             )
-            ((and (eq right '0) (not (eq left '0)))
+            ((and (equalp right '0) (not (equalp left '0)))
                 left
             )
             ((and (numberp left) (numberp right))
@@ -108,6 +108,9 @@
             )
             ((and (numberp up) (numberp down))
                 (/ up down)
+            )
+            ((equalp up down)
+                '1
             )
             (T
              (list '/ up down)))
