@@ -25,7 +25,7 @@
         
         ; (f^g)' = f^(g-1)*(gf' + g'f logf) 
         ((equal (first expr) 'expt)
-            (make_comp expr var))
+            (d_comp expr var))
         
         ; (sqrt f)' = (f^(1/2))'
         ((equal (first expr) 'sqrt)
@@ -162,7 +162,7 @@
 )
 
 ; (f^g)' = f^(g-1)*(gf' + g'f logf)  
-(defun make_comp (expr var)
+(defun d_comp (expr var)
             (make_mul 
                 (make_expt (nth 1 expr) (make_sub (nth 2 expr) 1))
                 (make_sum 
