@@ -1,3 +1,6 @@
+; calculates diverative of expression expr
+; example: (diff '(+ (* a x) b) 'x)
+; OUT: a
 (defun diff(expr var)
     (cond
         ; a' = 0
@@ -34,7 +37,55 @@
          (error "Unknown expression type - DERIV" expr)))
 )
 
-; simplifies a sum
+; calculates (f + g)' = f' + g'
+(defun d_sum(expr var)
+    (make_sum (diff (nth 1 expr) var) (diff (nth 2 expr) var))
+)
+
+; calculates (f - g)' = f' - g'
+(defun d_sub(expr var)
+    (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
+)
+
+; calculates (fg)' = f'g + fg'
+(defun d_mul(expr var)
+    (make_sum (make_mul (nth 2 expr) (diff (nth 1 expr) var))
+                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
+)
+
+; calculates (f/g)' = (f'g - fg') / (g*g)
+(defun d_div (expr var)
+    (make_div (make_sub  (make_mul (nth 2 expr) (diff (nth 1 expr) var))
+                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
+                (make_mul (nth 2 expr) (nth 2 expr)))
+)
+
+
+; calculates (f^g)' = f^(g-1)*(gf' + g'f logf)  
+(defun d_comp (expr var)
+            (make_mul 
+                (make_expt (nth 1 expr) (make_sub (nth 2 expr) 1))
+                (make_sum 
+                    (make_mul  
+                        (nth 2 expr)
+                        (diff (nth 1 expr) var)
+                    )
+                    (make_mul 
+                        (make_mul 
+                            (diff (nth 2 expr) var)
+                            (nth 1 expr)
+                        )
+                        (list 'log (nth 1 expr))
+                    )
+                )
+            )  
+  )     
+
+
+
+
+
+; builds and simplifies a sum
 (defun make_sum(left right)
     (cond 
             ((and (equalp left '0) (equalp right '0)) 
@@ -56,7 +107,7 @@
              `(+ ,left ,right)))
 )
 
-; simplifies a subtraction
+; builds and simplifies a subtraction
 (defun make_sub(left right)
     (cond 
             ((and (equalp left '0) (equalp right '0)) 
@@ -75,7 +126,7 @@
              `(- ,left ,right)))
 )
 
-; simplifies a multiplication
+; builds and simplifies a multiplication
 (defun make_mul(left right)
     (cond 
             ((or (eq left '0) (eq right '0)) 
@@ -94,7 +145,7 @@
              `(* ,left ,right)))
 )
 
-; simplifies a division
+; builds and simplifies a division
 (defun make_div(up down)
     (cond 
             ((eq up '0) 
@@ -117,29 +168,7 @@
 )
 
 
-; (f + g)' = f' + g'
-(defun d_sum(expr var)
-    (make_sum (diff (nth 1 expr) var) (diff (nth 2 expr) var))
-)
-
-; (f - g)' = f' - g'
-(defun d_sub(expr var)
-    (make_sub (diff (nth 1 expr) var) (diff (nth 2 expr) var))
-)
-
-; (fg)' = f'g + fg'
-(defun d_mul(expr var)
-    (make_sum (make_mul (nth 2 expr) (diff (nth 1 expr) var))
-                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
-)
-
-; (f/g)' = (f'g - fg') / (g*g)
-(defun d_div (expr var)
-    (make_div (make_sub  (make_mul (nth 2 expr) (diff (nth 1 expr) var))
-                (make_mul (nth 1 expr) (diff (nth 2 expr) var)))
-                (make_mul (nth 2 expr) (nth 2 expr)))
-)
-
+; builds and simplifies an exponent expression
 (defun make_expt(a b)
     (cond 
             ((and (equalp a '0) (equalp b '0)) 
@@ -161,28 +190,11 @@
              `(expt ,a ,b)))
 )
 
-; (f^g)' = f^(g-1)*(gf' + g'f logf)  
-(defun d_comp (expr var)
-            (make_mul 
-                (make_expt (nth 1 expr) (make_sub (nth 2 expr) 1))
-                (make_sum 
-                    (make_mul  
-                        (nth 2 expr)
-                        (diff (nth 1 expr) var)
-                    )
-                    (make_mul 
-                        (make_mul 
-                            (diff (nth 2 expr) var)
-                            (nth 1 expr)
-                        )
-                        (list 'log (nth 1 expr))
-                    )
-                )
-            )  
-  )     
+
+
 
 ; changes a function to its derivative  
-;  cos(x) na -sin(x)
+; f.i. cos(x) na -sin(x)
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) `(cos ,x))
         ((eq fun 'cos) `(- (sin ,x)))
