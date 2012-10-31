@@ -140,10 +140,31 @@
                 (make_mul (nth 2 expr) (nth 2 expr)))
 )
 
+(defun make_expt(a b)
+    (cond 
+            ((and (equalp a '0) (equalp b '0)) 
+                '1
+            )
+            ((equalp a '0) 
+                '0
+            )
+            ((equalp b '1)
+                'a
+            )
+            ((equalp b '0)
+                '1
+            )
+            ((and (numberp a) (numberp b))
+                (expt a b)
+            )
+            (T
+             `(expt ,a ,b)))
+)
+
 ; (f^g)' = f^(g-1)*(gf' + g'f logf)  
 (defun make_comp (expr var)
             (make_mul 
-                (list 'expt (nth 1 expr) (make_sub (nth 2 expr) 1))
+                (make_expt (nth 1 expr) (make_sub (nth 2 expr) 1))
                 (make_sum 
                     (make_mul  
                         (nth 2 expr)
@@ -163,10 +184,10 @@
 ; changes a function to its derivative  
 ;  cos(x) na -sin(x)
 (defun change_fun(fun x)
-    (cond ((eq fun 'sin) (list 'cos x))
-        ((eq fun 'cos) (list '- (list 'sin x)))
-        ((eq fun 'tan) (list '+ 1.0 (list '* (list 'tan x) (list 'tan x))))
-        ((eq fun 'log) (list '/ 1.0  x))
+    (cond ((eq fun 'sin) `(cos ,x))
+        ((eq fun 'cos) `(- (sin ,x)))
+        ((eq fun 'tan) `(+ 1.0 (* (tan ,x) (tan ,x))))
+        ((eq fun 'log) `(/ 1.0  ,x))
      (T
         (error "Not a function!" fun)))
 )
