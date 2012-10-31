@@ -49,6 +49,9 @@
             ((and (numberp left) (numberp right))
                 (+ left right)
             )
+            ((equalp left right)
+                (list '* 2 left)
+            )
             (T
              (list '+ left right)))
 )
@@ -56,13 +59,13 @@
 ; simplifies a subtraction
 (defun make_sub(left right)
     (cond 
-            ((and (eq left '0) (eq right '0)) 
+            ((and (equalp left '0) (equalp right '0)) 
                 '0
             )
-            ((and (eq left '0) (not (eq right '0)))
+            ((and (equalp left '0) (not (equalp right '0)))
                 (- right)
             )
-            ((and (eq right '0) (not (eq left '0)))
+            ((and (equalp right '0) (not (equalp left '0)))
                 left
             )
             ((and (numberp left) (numberp right))
@@ -158,7 +161,7 @@
 ;  cos(x) na -sin(x)
 (defun change_fun(fun x)
     (cond ((eq fun 'sin) (list 'cos x))
-        ((eq fun 'cos) (list '- 0.0 (list 'sin x)))
+        ((eq fun 'cos) (list '- (list 'sin x)))
         ((eq fun 'tan) (list '+ 1.0 (list '* (list 'tan x) (list 'tan x))))
         ((eq fun 'log) (list '/ 1.0  x))
      (T
@@ -173,4 +176,4 @@
         ((eq fun 'log) T)
      (T 
         NIL))
-)   
+)
