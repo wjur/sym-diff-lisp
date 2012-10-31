@@ -29,7 +29,7 @@
         
         ; (sqrt f)' = (f^(1/2))'
         ((equal (first expr) 'sqrt)
-            (diff (list 'expt (nth 1 expr) (make_div 1 2)) var))
+            (diff (make_expt (nth 1 expr) (make_div 1 2)) var))
         (T
          (error "Unknown expression type - DERIV" expr)))
 )
@@ -50,10 +50,10 @@
                 (+ left right)
             )
             ((equalp left right)
-                (list '* 2 left)
+                `(* 2 ,left)
             )
             (T
-             (list '+ left right)))
+             `(+ ,left ,right)))
 )
 
 ; simplifies a subtraction
@@ -72,7 +72,7 @@
                 (- left right)
             )
             (T
-             (list '- left right)))
+             `(- ,left ,right)))
 )
 
 ; simplifies a multiplication
@@ -91,7 +91,7 @@
                 (* left right)
             )
             (T
-             (list '* left right)))
+             `(* ,left ,right)))
 )
 
 ; simplifies a division
@@ -113,7 +113,7 @@
                 '1
             )
             (T
-             (list '/ up down)))
+             `(/ ,up ,down)))
 )
 
 
