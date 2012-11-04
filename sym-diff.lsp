@@ -1,6 +1,12 @@
 ; calculates diverative of expression expr
 ; example: (diff '(+ (* a x) b) 'x)
 ; OUT: a
+; (diff '(sqrt (sqrt x)) 'x)
+; (diff '(expt a x) 'x)
+; (diff '(expt x a) 'x)
+; (diff '(exp x) 'x)
+
+
 (defun diff(expr var)
     (cond
         ; a' = 0
@@ -200,6 +206,7 @@
         ((eq fun 'cos) `(- (sin ,x)))
         ((eq fun 'tan) `(+ 1.0 (* (tan ,x) (tan ,x))))
         ((eq fun 'log) `(/ 1.0  ,x))
+		((eq fun 'exp) `(exp ,x))
      (T
         (error "Not a function!" fun)))
 )
@@ -210,6 +217,7 @@
         ((eq fun 'cos) T)
         ((eq fun 'tan) T)
         ((eq fun 'log) T)
+		((eq fun 'exp) T)
      (T 
         NIL))
 )
