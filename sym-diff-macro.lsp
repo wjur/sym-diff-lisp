@@ -1,23 +1,8 @@
 ; calculates diverative of expression expr
-; example: (diff '(+ (* a x) b) 'x)
-; OUT: a
-; (diff '(sqrt (sqrt x)) 'x)
-; (diff '(expt a x) 'x)
-; (diff '(expt x a) 'x)
-; (diff '(exp x) 'x)
-
-; changes a function to its derivative  
-; f.i. cos(x) na -sin(x)
-(defmacro change_fun(fun x)
-    (cond ((eq fun 'sin) `(list 'cos (quote ,x)))
-        ((eq fun 'cos) `(list '- ('sin (quote ,x))))
-        ((eq fun 'tan) `(list '+ '1.0 (list '* ('tan (quote ,x)) ('tan (quote ,x)))))
-        ((eq fun 'log) `(list '/ '1.0  (quote ,x)))
-		((eq fun 'exp) `(list 'exp (quote ,x)))
-     (T
-        (error "Not a function!" fun)))
-)
-         
+; example: (diff (+ (* a x) b) x)
+; OUT: (+ (+ (* 0 X) (* 1 A)) 0)
+; (+ (+ (* 0 X) (* 1 A)) 0) == A
+       
 (defmacro diff(expr var)
 		(pprint "diff")
 		(pprint  expr)
