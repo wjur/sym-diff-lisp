@@ -6,6 +6,18 @@
 ; (diff '(expt x a) 'x)
 ; (diff '(exp x) 'x)
 
+; changes a function to its derivative  
+; f.i. cos(x) na -sin(x)
+(defmacro change_fun(fun x)
+    (cond ((eq fun 'sin) `(list 'cos (quote ,x)))
+        ((eq fun 'cos) `(list '- ('sin (quote ,x))))
+        ((eq fun 'tan) `(list '+ '1.0 (list '* ('tan (quote ,x)) ('tan (quote ,x)))))
+        ((eq fun 'log) `(list '/ '1.0  (quote ,x)))
+		((eq fun 'exp) `(list 'exp (quote ,x)))
+     (T
+        (error "Not a function!" fun)))
+)
+         
 (defmacro diff(expr var)
 		(pprint "diff")
 		(pprint  expr)
@@ -32,8 +44,11 @@
 			((equal (first expr) '*) `(list '+ (list '* (diff ,(second expr) ,var) (quote ,(third expr))) (list '* (diff ,(third expr) ,var) (quote ,(second expr)))))
         
 			; (f/g)' = (f'g - fg') / (g*g)
-			((equal (first expr) '/) `(list '/  (list '- (list '* (diff ,(second expr) var) (quote ,(third expr)) ) (list '* (diff ,(third expr) ,var) (quote ,(second expr))) ) (list '* (quote ,(third expr)) (quote ,(third expr)))))
+			((equal (first expr) '/) `(list '/  (list '- (list '* (diff ,(second expr) ,var) (quote ,(third expr)) ) (list '* (diff ,(third expr) ,var) (quote ,(second expr))) ) (list '* (quote ,(third expr)) (quote ,(third expr)))))
 			
+			((equal (first expr) 'sin) `(list '* (list 'cos (quote ,(second expr))) (diff ,(second expr) ,var) ))
+			((equal (first expr) 'cos) `(list '* (list '- 'sin (quote ,(second expr))) (diff ,(second expr) ,var) ))
+			((equal (first expr) 'log) `(list '* (list '/ '1.0 (quote ,(second expr))) (diff ,(second expr) ,var) ))
 			
 			(T
 			 (error "Unknown expression type - DERIV" expr)))
